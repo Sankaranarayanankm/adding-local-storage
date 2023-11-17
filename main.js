@@ -29,13 +29,18 @@ form.addEventListener("submit" ,getValue);
     };
     // storing values in crudcrud 
    let postData=await axios.post("https://crudcrud.com/api/1513da9700aa41909e9d17e3db98756d/value",obj)
-    console.log(postData)
+    // console.log(postData)
     // showing values in the screen 
     showUser(obj);
 
-
-   
  }
+window.addEventListener("DOMContentLoaded",async ()=>{
+    let data=await axios.get("https://crudcrud.com/api/1513da9700aa41909e9d17e3db98756d/value");
+    for(let i=0;i<data.data.length;i++){
+        showUser(data.data[i]);
+    }    
+})
+
  function showUser(item){
     
     let Inputname=item.name;
