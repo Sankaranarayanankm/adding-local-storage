@@ -6,12 +6,6 @@ let itemList=document.getElementById('items');
 // adding event to form 
 form.addEventListener("submit" ,getValue);
 
-// adding remove event
-// itemList.addEventListener("click",removeItem);
-
-// // adding edit event
-// itemList.addEventListener("click",editItem);
-
 
 // get value function
  async function getValue(event) {
@@ -21,31 +15,28 @@ form.addEventListener("submit" ,getValue);
   let email=document.getElementById('email').value;
   let phone=document.getElementById('phone').value;
 
-    
     let obj={
         "name":Inputname,
         "email":email,
         "phoneNumber":phone
     };
-    // storing values in crudcrud 
-   let postData=await axios.post("https://crudcrud.com/api/1513da9700aa41909e9d17e3db98756d/value",obj)
-    // console.log(postData)
-    // showing values in the screen 
+  
+   let postData=await axios.post("https://crudcrud.com/api/67333bffe151416d90af968928d4923b/value",obj)
     showUser(obj);
-
  }
+
 window.addEventListener("DOMContentLoaded",async ()=>{
-    let data=await axios.get("https://crudcrud.com/api/1513da9700aa41909e9d17e3db98756d/value");
+    let data=await axios.get("https://crudcrud.com/api/67333bffe151416d90af968928d4923b/value");
     for(let i=0;i<data.data.length;i++){
         showUser(data.data[i]);
     }    
 })
 
  function showUser(item){
-    
     let Inputname=item.name;
     let email=item.email;
     let phone=item.phoneNumber;
+    let id=item._id;
 
     // creating new li
     let li=document.createElement("li");
@@ -57,11 +48,15 @@ window.addEventListener("DOMContentLoaded",async ()=>{
 
     // creating delete button
     let button= document.createElement('button');
+    button.onclick=(event)=>removeItem(event,id);
+    button.type="button";
     button.className="delete";
     button.appendChild(document.createTextNode("delete"));
     
     // creating edit button 
     let edit=document.createElement("button");
+    edit.onclick=(event)=>editItem(event,id);
+    edit.type="button";
     edit.className="edit";
     edit.appendChild(document.createTextNode("edit"));
     
@@ -73,37 +68,34 @@ window.addEventListener("DOMContentLoaded",async ()=>{
     itemList.appendChild(li)
  }
 
-//  // function remove item
-// function removeItem(e){
-//     if(e.target.classList.contains("delete")){
-//         let li=e.target.parentElement;
-//         itemList.removeChild(li);
-
-//         // removing item from local storage
-//         let itemName = li.childNodes[0].textContent;
-//         localStorage.removeItem(itemName);
-//         console.log(itemName);
-//     }
-// }
+ // function remove item
+async function removeItem(event,id){
+    
+    if(event.target.classList.contains("delete")){
+        
+        let li=event.target.parentElement;
+        itemList.removeChild(li);   
+    }
+    //    removing item from cloud 
+    await axios.delete(`https://crudcrud.com/api/67333bffe151416d90af968928d4923b/value/${id}`);
+}
    
 // // edit item function 
-// function editItem(e){
-//     if(e.target.classList.contains("edit")){
-//         let li=e.target.parentElement;
-//         itemList.removeChild(li);
-
-//         // removing item from local storage
-//         let itemName = li.childNodes[0].textContent;
-//         let Inputname = document.getElementById('name');
-//         let email = document.getElementById('email');
-//         let phone = document.getElementById('phone');
-
-//         Inputname.value = li.childNodes[0].textContent;
+async function editItem(event,id){
+    if(event.target.classList.contains("edit")){
         
-//         Inputname.value= li.childNodes[0].textContent;
-//         email.value=li.childNodes[1].textContent;
-//         phone.value=li.childNodes[2].textContent;
+        let editData=await axios.get(`https://crudcrud.com/api/67333bffe151416d90af968928d4923b/value/${id}`)
+        const {data}=editData;
+        console.log(data);
+        document.getElementById("name").value=data.name;
+        document.getElementById("email").value=data.email;
+        document.getElementById("phone").value=data.phoneNumber;
 
-//         localStorage.removeItem(itemName);
-// }
-// }
+        let li=event.target.parentElement;
+        itemList.removeChild(li); 
+        
+        let deleteData=await axios.delete(`https://crudcrud.com/api/67333bffe151416d90af968928d4923b/value/${id}`)
+    }
+
+    console.log(editData)
+}
